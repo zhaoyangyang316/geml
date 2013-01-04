@@ -18,3 +18,14 @@ import time
 import NN
 import NN_m
 import tools
+
+
+def loaddata():
+    return numpy.zeros((1,1))
+
+def check():
+    pass()
+
+def normalisation():
+    pass()
+

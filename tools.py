@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+tools.py
+
+Created by YANGYANG ZHAO on 2013-01-03.
+
+"""
+# coding=utf-8
+
+###
+# Tools
+###
+
+
+
 import numpy
 import pylab
 import matplotlib
@@ -13,14 +29,14 @@ def minkowski_mat(x,Y,p=2):
 
 def teste(etiquettesTest, etiquettesPred,n_classes):
 
-    
+
     conf_matrix = numpy.zeros((n_classes,n_classes))
 
     for (test,pred) in zip(etiquettesTest, etiquettesPred):
         conf_matrix[test-1,pred-1] += 1
 
     return conf_matrix
-    
+
 
 # fonction plot
 def gridplot(classifieur,train,test,n_points=50):
@@ -50,9 +66,9 @@ def gridplot(classifieur,train,test,n_points=50):
     pylab.scatter(test[:,0], test[:,1], c = test[:,-1], marker = 's', s=50)
 
     ## Un petit hack, parce que la fonctionalite manque a pylab...
-    h1, = pylab.plot([min_x1], [min_x2], marker='o', c = 'w',ms=5) 
-    h2 ,= pylab.plot([min_x1], [min_x2], marker='v', c = 'w',ms=5) 
-    h3 ,= pylab.plot([min_x1], [min_x2], marker='s', c = 'w',ms=5) 
+    h1, = pylab.plot([min_x1], [min_x2], marker='o', c = 'w',ms=5)
+    h2 ,= pylab.plot([min_x1], [min_x2], marker='v', c = 'w',ms=5)
+    h3 ,= pylab.plot([min_x1], [min_x2], marker='s', c = 'w',ms=5)
     handles = [h1,h2,h3]
     ## fin du hack
 
@@ -89,5 +105,5 @@ def normalisation(X):
         if ecart[i]!=0:
             out[:,i]=out[:,i]/ecart[i]
     return out
-    
-    
+
+

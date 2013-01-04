@@ -11,115 +11,66 @@ Created by YANGYANG ZHAO on 2013-01-03.
 ###
 # Tools
 ###
+
+
+import data_process
 import numpy
 import random
 import pylab
 import time
 import NN
-import NN_m
 import tools
 
-
-
-import gzip,pickle
-
-def run_classify(dh,alpha,lamda,batch):
-	
-
-	f=gzip.open('mnist.pkl.gz')
-	mnist=pickle.load(f)
-
-	n_exemple=mnist[0][0].shape[0]
-	d=mnist[0][0].shape[1]
-
-	data=numpy.zeros((n_exemple,d+1))
-	data[:,:-1]=mnist[0][0]# matrice de train data
-	data[:,:-1]=utilitaires.normalisation(data[:,:-1])
-	aux=mnist[0][1]# vecteur des train labels
-	print numpy.max(aux)
-
+def run_classify(n_train,n_test,n_valid,alpha,lamda,batch):
+    #check and load data
+    data_process.check()
+    data = data_process.loaddat()
+	n_exemple = data.shape[0]
+    d = data.shape[1]
+	data[:,:-1]=data_process.normalisation(data[:,:-1])
 	for i in range(n_exemple):
-		data[i,-1]=aux[i]+1
-	print data.shape
-	test_data=mnist[2][0]# data des valid labels
-	test_data=utilitaires.normalisation(test_data)
-	test_labels_full=mnist[2][1]+1# vecteur des valid labels
-	print numpy.min(test_labels_full)
+		data[i,-1]=data[i,-1]+1
 
-	#data[2][0]# matrice de test data
-	#data[2][0]# vecteur des test labels
+    #shuffle the data
+    inds = range(n_exemple)
+    random.shuffle(inds)
 
-	valide_set_full=mnist[1][0]
-	valide_set_full=utilitaires.normalisation(valide_set_full)
-	valide_labels_full=mnist[1][1]+1
-	print data.shape
+    #split data
+    tmp_test = n_train+n_test
+    tmp_valid = tmp_test + n_valid
+    inds_train = inds[:n_train]
+    inds_test = inds[n_train:tmp_test]
+    inds_valid = inds[tmp_test:tmp_valid]
+    train_data = data[inds_train,:]
+    test_data = data[inds_test,:]
+    valid_data = data[inds_valid,:]
+    test_input = test_data[:,:-1]
+    test_labels = test_data[:,-1]
+    valid_input  = test_data[:,:-1]
+    valid_labels = valid_data[:,-1]
 
-
-	# Nombre de voisins (k) dans k-PPV
-	#k = 2
+    #define param
 	# Nombre de classes
-	n_classes = 10
-	# Nombre de points d'entrainement
-	n_train = 40000
-	n_test =1000
-	n_valide=800
+    n_classes = 10
+    m = n_classes
 
-	print "On va entrainer"
+    #create and train the model
+	model = NN.NN(m,d,alpha,lamda,batch)
+	model.train(train_data,valid_data,valid_labels,test_data,test_labels)
 
-	# decommenter pour avoir des resultats non-deterministes 
-	random.seed(75595)
-	# Déterminer au hasard des indices pour les exemples d'entrainement et de test
-	inds_train = range(data.shape[0])
-	inds_test = range(test_data.shape[0])
-	inds_valide = range(valide_set_full.shape[0])
-
-	random.shuffle(inds_train)
-	random.shuffle(inds_test)
-	random.shuffle(inds_valide)
-	train_inds = inds_train[:n_train]
-	test_inds = inds_test[:n_test]
-	valide_inds = inds_test[:n_test]
-	# separer les donnees dans les deux ensembles
-	train_set = data[train_inds,:]
-	test_set = test_data[test_inds,:]
-	test_labels= test_labels_full[test_inds,:]
-	valide_set = valide_set_full[valide_inds,:]
-	valide_labels= valide_labels_full[valide_inds,:]
-
-	print numpy.max(test_labels)
-	# separarer l'ensemble de test dans les entrees et les etiquettes
-	# Créer le classifieur
-	print test_set.shape
-	m=10
-	#dh=200
-	#alpha=0.001
-	#lamda=0.1
-	#batch=40
-	model = NN_m.NN_m( m,d,dh, alpha,lamda,batch)
-	#model.testGrad(train_set)
-	# l'entrainer
-	model.train(train_set,valide_set,valide_labels,test_set,test_labels)
-	# Obtenir ses prédictions
+    #compute the prediction on test data
 	t1 = time.clock()
 	les_comptes = model.compute_predictions(test_set)
 	t2 = time.clock()
-	print 'Ca nous a pris ', t2-t1, ' secondes pour calculer les predictions sur ', test_set.shape[0],' points de test'
-	print les_comptes
-	# Vote majoritaire (+1 puisquie nos classes sont de 1 a n)
+	print 'It takes ', t2-t1, ' secondes to compute the prediction on ', test_data.shape[0],' points of test'
 	classes_pred = numpy.argmax(les_comptes,axis=1)+1
-	print classes_pred.shape
-	print test_labels.shape
-	#print sum((classes_pred-test_labels)**2)/200
-	# Faire les tests
-	# Matrice de confusion 
 	confmat = utilitaires.teste(test_labels, classes_pred,n_classes)
 	print 'La matrice de confusion est:'
 	print confmat
 
-	# Erreur de test
+	# Error of test
 	sum_preds = numpy.sum(confmat)
 	sum_correct = numpy.sum(numpy.diag(confmat))
-	print "L'erreur de test est de ", 100*(1.0 - (float(sum_correct) / sum_preds)),"%"
+	print "The error of test is ", 100*(1.0 - (float(sum_correct) / sum_preds)),"%"
 
 
-cal(500,0.01,0.01,20)
