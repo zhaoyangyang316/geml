@@ -25,11 +25,11 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch):
     #check and load data
     data_process.check()
     data = data_process.loaddat()
-	n_exemple = data.shape[0]
+    n_exemple = data.shape[0]
     d = data.shape[1]
-	data[:,:-1]=data_process.normalisation(data[:,:-1])
-	for i in range(n_exemple):
-		data[i,-1]=data[i,-1]+1
+    data[:,:-1]=data_process.normalisation(data[:,:-1])
+    for i in range(n_exemple):
+        data[i,-1]=data[i,-1]+1
 
     #shuffle the data
     inds = range(n_exemple)
@@ -50,7 +50,7 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch):
     valid_labels = valid_data[:,-1]
 
     #define param
-	# Nombre de classes
+    # Nombre de classes
     n_classes = 10
     m = n_classes
 
