@@ -16,16 +16,17 @@ import random
 import pylab
 import time
 import NN
-import NN_m
 import tools
 
+def process():
+    print "Process to complete"
 
 def loaddata():
-    return numpy.zeros((1,1))
+    data = numpy.loadtxt('iris.txt')
+    return data
 
 def check():
-    pass()
+    return True
 
 def normalisation():
-    pass()
-
+    print "normalisation to complete"
