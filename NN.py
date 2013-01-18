@@ -23,7 +23,7 @@ class NN:
         #print X
         return 1/(1+exp(-X))
 
-    def __init__(self, m,d, alpha,lamda,batch,NN_type):
+    def __init__(self, m,d, alpha,lamda,batch,NN_type,Reg_type):
         self.best_model_valid_error = 99.9
         self.best_model_test_error = 99.9
 
@@ -33,6 +33,7 @@ class NN:
         self.batch=batch #longeur de batch
         self.lamda=lamda
         self.NN_type = NN_type
+        self.Reg_type = Reg_type
 
         print "Initialize the NN model."
 
@@ -127,18 +128,20 @@ class NN:
 
     def adjust_weight(self):
         #X est 1*d
-        #self.W1 = self.W1 - self.alpha * self.GaW1 - self.lamda*self.W1
-        #self.B1 = self.B1 - self.alpha * self.G1 - self.lamda*self.B1
-        print "W1 is ",self.W1
-        print "B1 is ",self.B1
-        self.W1 = self.W1 - self.alpha * self.GaW1 
-        self.W1 = self.absClip(self.W1, self.lamda)
+        if (self.Reg_type == 1):
+            self.W1 = self.W1 - self.alpha * self.GaW1 - self.lamda*self.W1
+            self.B1 = self.B1 - self.alpha * self.G1 - self.lamda*self.B1
+            #print "W1 is ",self.W1
+            #print "B1 is ",self.B1
+        else:
+            self.W1 = self.W1 - self.alpha * self.GaW1 
+            self.W1 = self.absClip(self.W1, self.lamda)
 
-        self.B1 = self.B1 - self.alpha * self.G1
-        self.B1 = self.absClip(self.B1, self.lamda)
+            self.B1 = self.B1 - self.alpha * self.G1
+            self.B1 = self.absClip(self.B1, self.lamda)
 
-        print "W1 is ",self.W1
-        print "B1 is ",self.B1
+        #print "W1 is ",self.W1
+        #print "B1 is ",self.B1
 
 
     def absClip(self, X, minV):

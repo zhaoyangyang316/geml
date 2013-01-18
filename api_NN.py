@@ -21,7 +21,7 @@ import time
 import NN
 import tools
 
-def run_classify(n_train,n_test,n_valid,alpha,lamda,batch,NN_type):
+def run_classify(n_train,n_test,n_valid,alpha,lamda,batch,NN_type,Reg_type):
 #check and load data
     #if(not data_process.check()):
     #data_process.process()
@@ -60,7 +60,7 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch,NN_type):
     m = n_classes
 
 #create and train the model
-    model = NN.NN(m,d,alpha,lamda,batch,NN_type)
+    model = NN.NN(m,d,alpha,lamda,batch,NN_type,Reg_type)
     model.train(train_data,valid_input,valid_labels,test_input,test_labels)
 
 #compute the prediction on train data
