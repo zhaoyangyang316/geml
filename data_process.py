@@ -22,7 +22,9 @@ def process():
     print "Process to complete"
 
 def loaddata():
-    data = loadtxt('iris.txt')
+    data = genfromtxt("AP_Uterus_Kidney.csv", delimiter=",")
+    data = data[1:,1:]
+    data[:,:-1] = log2(data[:,:-1])
     return data
 
 def check():
@@ -41,7 +43,9 @@ def normalisation(X):
 def pca(data,outDim):
     X = mat(normalisation(data))
     # compute the covariace matrix
+    print "computing covariace matrix"
     S = ( X.T * X)/ X.shape[0]
+    print "computing SVD"
     U, O, V = linalg.svd(S, full_matrices=True)
     O=diag(O[:outDim])**0.5
     V=V[:outDim,:]

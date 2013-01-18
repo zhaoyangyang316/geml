@@ -21,15 +21,19 @@ import time
 import NN
 import tools
 
-def run_classify(n_train,n_test,n_valid,alpha,lamda,batch):
+def run_classify(n_train,n_test,n_valid,alpha,lamda,batch,NN_type):
 #check and load data
-    if(not data_process.check()):
-        data_process.process()
-    data = data_process.loaddata()
+    #if(not data_process.check()):
+    #data_process.process()
+    #data = data_process.loaddata()
+    #n_exemple = data.shape[0]
+   # d = data.shape[1]-1
+   # data[:,:-1]=tools.normalisation(data[:,:-1])
+    data = numpy.loadtxt("nntest.txt")
+    data[:,:-1] = data_process.normalisation(data[:,:-1])
     n_exemple = data.shape[0]
     d = data.shape[1]-1
-    data[:,:-1]=tools.normalisation(data[:,:-1])
-
+    #print data
 #shuffle the data
     inds = range(n_exemple)
     random.shuffle(inds)
@@ -41,6 +45,7 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch):
     inds_test = inds[n_train:tmp_test]
     inds_valid = inds[tmp_test:tmp_valid]
     train_data = data[inds_train,:]
+
     print "Train data shape: ",train_data.shape
     test_data = data[inds_test,:]
     valid_data = data[inds_valid,:]
@@ -51,12 +56,43 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch):
 
 #define param
 # Nombre de classes
-    n_classes = 3
+    n_classes = 2
     m = n_classes
 
 #create and train the model
-    model = NN.NN(m,d,alpha,lamda,batch)
-    model.train(train_data,valid_input,valid_labels)
+    model = NN.NN(m,d,alpha,lamda,batch,NN_type)
+    model.train(train_data,valid_input,valid_labels,test_input,test_labels)
+
+#compute the prediction on train data
+    t1 = time.clock()
+    les_comptes = model.compute_predictions(train_data[:,:-1])
+    t2 = time.clock()
+    print 'It takes ', t2-t1, ' secondes to compute the prediction on ', test_data.shape[0],' points of test'
+    classes_pred = numpy.argmax(les_comptes,axis=1)+1
+    confmat = tools.teste(train_data[:,-1], classes_pred,n_classes)
+    print 'La matrice de confusion est:'
+    print confmat
+
+    # Error of test
+    sum_preds = numpy.sum(confmat)
+    sum_correct = numpy.sum(numpy.diag(confmat))
+    print "The error of train is ", 100*(1.0 - (float(sum_correct) / sum_preds)),"%"
+
+#compute the prediction on valid data
+    t1 = time.clock()
+    les_comptes = model.compute_predictions(valid_input)
+    t2 = time.clock()
+    print 'It takes ', t2-t1, ' secondes to compute the prediction on ', test_data.shape[0],' points of test'
+    classes_pred = numpy.argmax(les_comptes,axis=1)+1
+    confmat = tools.teste(valid_labels, classes_pred,n_classes)
+    print 'La matrice de confusion est:'
+    print confmat
+
+# Error of test
+    sum_preds = numpy.sum(confmat)
+    sum_correct = numpy.sum(numpy.diag(confmat))
+    print "The error of validation is ", 100*(1.0 - (float(sum_correct) / sum_preds)),"%"
+
 
 #compute the prediction on test data
     t1 = time.clock()
