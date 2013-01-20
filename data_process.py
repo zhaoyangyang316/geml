@@ -15,7 +15,7 @@ from numpy import *
 import random
 import pylab
 import time
-import NN
+import AD
 import tools
 
 def process():
@@ -51,3 +51,27 @@ def pca(data,outDim):
     V=V[:outDim,:]
     #V=V[:outDim,:]
     return (mat(O)*V*X.T).T
+
+
+
+def auto_decoder(dOut, alpha,batch):
+#check and load data
+    #if(not data_process.check()):
+    #data_process.process()
+    #data = data_process.loaddata()
+    #n_exemple = data.shape[0]
+   # d = data.shape[1]-1
+   # data[:,:-1]=tools.normalisation(data[:,:-1])
+    data = loadtxt("nntest.txt")
+    data= normalisation(data[:,:-1])
+    print data[0]
+    n_exemple = data.shape[0]
+    d = data.shape[1]
+    #print data
+#shuffle the data
+    inds = range(n_exemple)
+    random.shuffle(inds)
+    data = data[inds,:]
+#create and train the model
+    model = AD.AutoDecoder(dOut,d,alpha,batch)
+    model.train(data)

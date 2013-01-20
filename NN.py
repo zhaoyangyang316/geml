@@ -239,6 +239,8 @@ class NN:
 
 
             if (taux_valid< seuil) or (itera > max_iter):
+                self.bestW1 = self.W1
+                self.bestB1 = self.B1
                 finish = True
 
 

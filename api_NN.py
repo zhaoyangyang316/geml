@@ -29,7 +29,7 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch,NN_type,Reg_type):
     #n_exemple = data.shape[0]
    # d = data.shape[1]-1
    # data[:,:-1]=tools.normalisation(data[:,:-1])
-    data = numpy.loadtxt("nntest.txt")
+    data = numpy.loadtxt("AP_Breast_Kidney.csv", delimiter = ",")
     data[:,:-1] = data_process.normalisation(data[:,:-1])
     n_exemple = data.shape[0]
     d = data.shape[1]-1
@@ -61,8 +61,10 @@ def run_classify(n_train,n_test,n_valid,alpha,lamda,batch,NN_type,Reg_type):
 
 #create and train the model
     model = NN.NN(m,d,alpha,lamda,batch,NN_type,Reg_type)
+    t1 = time.clock()
     model.train(train_data,valid_input,valid_labels,test_input,test_labels)
-
+    t2 = time.clock()
+    print 'It takes ', t2-t1, ' secondes to train the neural network.'
 #compute the prediction on train data
     t1 = time.clock()
     les_comptes = model.compute_predictions(train_data[:,:-1])
